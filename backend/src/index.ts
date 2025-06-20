@@ -1,4 +1,6 @@
 import express from 'express';
+
+import { authRouter } from './auth/authRouter';
 import { dataServiceTemp } from './data/dataService';
 import { dataSourceTemp } from './data/dataSource';
 
@@ -26,10 +28,12 @@ const app = express();
 		console.error("Erro ao criar banco de dados!", error);
 	}
 
+	app.use("/auth", authRouter);
+
 	app.listen(3000, () => {
 		console.log('Sucesso ao conectar servidor!');
 	})
-	.on('error', (error) => {
-		console.error('Erro ao conectar servidor!', error);
-	});
+		.on('error', (error) => {
+			console.error('Erro ao conectar servidor!', error);
+		});
 })();
