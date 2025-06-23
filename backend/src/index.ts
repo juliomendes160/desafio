@@ -2,6 +2,8 @@ import express from 'express';
 
 import { dataSource } from './data/dataSource';
 import { UserRouter } from './user/userRouter';
+import { AuthRouter } from './auth/authRouter';
+import { AuthMiddleware } from './auth/authMiddleware';
 
 const app = express();
 app.use(express.json());
@@ -16,10 +18,16 @@ app.use(express.json());
 		console.error("Erro ao conectar no banco de dados!", error);
 		process.exit(1);
 	};
-	
-	const userRouter = new UserRouter(dataSource);
 
-	app.use("/user", userRouter.routes);
+	const userRouter = new UserRouter(dataSource);
+	const authRouter = new AuthRouter(userRouter.service);
+	const authMiddleware = new AuthMiddleware();
+	
+	app.use('/auth', authRouter.routes);
+
+	app.use(authMiddleware.authorize);
+	
+	app.use('/user', userRouter.routes);
 
 	app.listen(3000, () => {
 		console.log('Sucesso ao iniciar servidor!');
