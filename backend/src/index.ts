@@ -4,6 +4,7 @@ import { dataSource } from './data/dataSource';
 import { UserRouter } from './user/userRouter';
 import { AuthRouter } from './auth/authRouter';
 import { AuthMiddleware } from './auth/authMiddleware';
+import { OperationRouter } from './operation/operationRouter';
 
 const app = express();
 app.use(express.json());
@@ -20,14 +21,17 @@ app.use(express.json());
 	};
 
 	const userRouter = new UserRouter(dataSource);
+	const operationRouter = new OperationRouter(dataSource);
+
 	const authRouter = new AuthRouter(userRouter.service);
 	const authMiddleware = new AuthMiddleware();
 	
 	app.use('/auth', authRouter.routes);
-
-	app.use(authMiddleware.authorize);
 	
+	app.use(authMiddleware.authorize);
+
 	app.use('/user', userRouter.routes);
+	app.use('/operation', operationRouter.routes);
 
 	app.listen(3000, () => {
 		console.log('Sucesso ao iniciar servidor!');
