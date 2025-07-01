@@ -2,8 +2,12 @@ import { Request, Response } from 'express';
 
 import { User } from './userEntities';
 import { UserService } from './userService';
+import { Modules, Actions } from '../util/utilEnum';
+import { UtilResponse } from '../util/utilResponse';
+
 
 export class UserController {
+
 	private userService: UserService;
 
 	constructor(userService: UserService) {
@@ -16,71 +20,65 @@ export class UserController {
 
 			const result = await this.userService.save(user);
 
-			res.status(201).json({ message: "Sucesso ao salvar!", result });
+			UtilResponse.success(req, res, Modules.USER, Actions.SAVE, result);
 		}
 		catch (error: any) {
-			res.status(500).json({ message: "Erro ao salvar!", error: error.message });
+			UtilResponse.error(req, res, Modules.USER, Actions.SAVE, error);
 		}
 	}
 
 	find = async (req: Request, res: Response) => {
+
 		try {
 			const result = await this.userService.find();
 
-			if (!result) {
-				res.status(404).json({ message: "Sucesso ao listar!", result: 'Nenhum um registro encontrado!' });
-				return;
-			}
+			UtilResponse.success(req, res, Modules.USER, Actions.FIND, result);
 
-			res.status(200).json({ message: "Sucesso ao listar", result });
 		}
 		catch (error: any) {
-			res.status(500).json({ message: "Erro ao listar!", error: error.message });
+			UtilResponse.error(req, res, Modules.USER, Actions.FIND, error);
 		}
 	}
 
 	findOneBy = async (req: Request, res: Response) => {
+
 		try {
 			const user: Partial<User> = { id: Number(req.params.id) };
 
 			const result = await this.userService.findOneBy(user);
 
-			if (!result) {
-				res.status(404).json({ message: "Sucesso ao consultar!", result: 'Nenhum um registro encontrado!' });
-				return;
-			}
-
-			res.status(200).json({ message: "Sucesso ao consultar!", result });
+			UtilResponse.success(req, res, Modules.USER, Actions.FIND_ONE_BY, result);
 		}
 		catch (error: any) {
-			res.status(500).json({ message: "Erro ao consultar!", error: error.message });
+			UtilResponse.error(req, res, Modules.USER, Actions.FIND_ONE_BY, error);
 		}
 	}
 
 	update = async (req: Request, res: Response) => {
+
 		try {
 			const user: User = { id: Number(req.params.id), ...req.body };
 
 			const result = await this.userService.update(user);
 
-			res.status(200).json({ message: "Sucesso ao atualizar!", result });
+			UtilResponse.success(req, res, Modules.USER, Actions.UPDATE, result);
 		}
 		catch (error: any) {
-			res.status(500).json({ message: "Erro ao atualizar!", error: error.message });
+			UtilResponse.error(req, res, Modules.USER, Actions.UPDATE, error);
 		}
 	}
 
 	delete = async (req: Request, res: Response) => {
+
 		try {
 			const id = Number(req.params.id);
 
 			const result = await this.userService.delete(id);
 
-			res.status(200).json({ message: "Sucesso ao deletar!", result });
+			UtilResponse.error(req, res, Modules.USER, Actions.DELETE, result);
 		}
 		catch (error: any) {
-			res.status(500).json({ message: "Erro ao deletar!", error: error.message });
+			UtilResponse.error(req, res, Modules.USER, Actions.DELETE, error);
 		}
 	}
-
 }
